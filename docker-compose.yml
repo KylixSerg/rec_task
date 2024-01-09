@@ -1,0 +1,15 @@
+version: '3.2'
+services:
+
+  pgsql:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+    ports:
+      - 15435:5432
+    environment:
+      POSTGRES_PASSWORD: rec_task
+      POSTGRES_USER: rec_task

@@ -10,8 +10,24 @@ requires-python = '>=3.11'
 version = "1.0.0"
 dynamic = ['dependencies']
 
+# Dependencies
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
 [project.optional-dependencies]
 test = []
+
+# Style formatting/checks
+[tool.black]
+line-length = 99
+skip-string-normalization = true
+target-version = ['py311']
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_single_line = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 99

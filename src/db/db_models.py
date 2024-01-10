@@ -28,3 +28,13 @@ class Experiment(Base):
     description: Mapped[str]
 
     sample_ration: Mapped[int]
+
+
+class Team(Base):
+    """Database model for team model."""
+
+    __tablename__ = 'team'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+
+    name: Mapped[str]

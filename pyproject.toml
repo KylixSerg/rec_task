@@ -15,7 +15,7 @@ dynamic = ['dependencies']
 dependencies = {file = ["requirements.txt"]}
 
 [project.optional-dependencies]
-test = []
+test = ["pytest", "pytest-env", "factory-boy"]
 
 # Style formatting/checks
 [tool.black]
@@ -31,3 +31,16 @@ force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
 line_length = 99
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = """
+    -vv
+"""
+env = """
+    ENV = test
+    DATABASE_USER=rec_task_test
+    DATABASE_PASSWORD=rec_task_test
+    DATABASE_NAME=rec_task_test
+    DATABASE_PORT=15436
+"""

@@ -13,3 +13,16 @@ services:
     environment:
       POSTGRES_PASSWORD: rec_task
       POSTGRES_USER: rec_task
+
+  pgsql_test:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - type: bind
+        source: /tmp
+        target: /tmp
+    ports:
+      - 15436:5432
+    environment:
+      POSTGRES_PASSWORD: rec_task_test
+      POSTGRES_USER: rec_task_test

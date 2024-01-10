@@ -5,11 +5,16 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import Table
+from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
+from config import DATABASE_URL
 
 
 class Base(DeclarativeBase):
@@ -21,6 +26,20 @@ class Base(DeclarativeBase):
 metadata = Base.metadata
 engine = None
 session: Session = None
+
+
+def _create_engine():
+    global engine
+    engine = create_engine(DATABASE_URL)
+    return engine
+
+
+def setup_db(engine=None):
+    global session
+    if not engine:
+        engine = _create_engine()
+    session_factory = sessionmaker(engine, autocommit=False)
+    session = scoped_session(session_factory)
 
 
 experiments_teams = Table(

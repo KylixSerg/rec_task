@@ -27,7 +27,7 @@ class Experiment(Base):
 
     description: Mapped[str]
 
-    sample_ration: Mapped[int]
+    sample_ratio: Mapped[int]
 
 
 class Team(Base):

@@ -1,8 +1,12 @@
 from unittest.mock import ANY
 
+from tests.factories import TeamFactory
+
 
 def test_create_team(client, faker):
     """Test creating a team."""
+
+    parent_team = TeamFactory()
 
     # Missing json data
     payload = {}
@@ -14,9 +18,7 @@ def test_create_team(client, faker):
     }
 
     # valid
-    payload = {
-        "name": faker.pystr(),
-    }
+    payload = {"name": faker.pystr(), "parent_team_id": parent_team.id}
 
     ret = client.post('/teams', json=payload)
     assert ret.status_code == 201

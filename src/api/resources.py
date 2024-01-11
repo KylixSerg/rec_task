@@ -29,6 +29,7 @@ class TeamSchema(Schema):
     id = maf.Integer()
     name = maf.String(required=True)
     experiments = maf.Nested("ExperimentSchema", many=True, dump_only=True, exclude=['teams'])
+    parent_team_id = maf.Integer(load_only=True)
 
 
 class ExperimentSchema(Schema):
@@ -195,6 +196,11 @@ def create_team():
         return jsonify('Team already exists'), 400
 
     team = Team(name=item['name'])
+
+    if parent_id := item.get("parent_team_id"):
+        if (parent := db_session.get(Team, parent_id)) is None:
+            return jsonify("Specified parent not found"), 404
+        team.parent_team_id = parent.id
 
     db_session.add(team)
     db_session.commit()

@@ -1,13 +1,12 @@
-from flask import Blueprint
 from flask import Flask
 from flask import jsonify
 
-bp = Blueprint('rec_task_bp', __name__, url_prefix='')
+from api.experiments import bp
+from db.db_models import setup_db
 
 
 def create_app():
-
-    # setup db here
+    setup_db()
 
     app = Flask(__name__, static_folder=None)
 
@@ -16,12 +15,12 @@ def create_app():
 
     # register an error handler
 
+    # register a health endpoint
+    @app.route("/health")
+    def health():
+        return jsonify(dict(status="OK")), 200
+
     return app
-
-
-@bp.route("/health")
-def health():
-    return jsonify(dict(status="OK")), 200
 
 
 def run():

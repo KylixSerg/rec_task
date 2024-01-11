@@ -121,3 +121,52 @@ def test_get_experiments(client):
             ],
         },
     ]
+
+
+def test_update_experiment(client):
+    """Test update experiment teams."""
+
+    t1, t2 = TeamFactory.create_batch(2)
+    e = ExperimentFactory(teams=[t1])
+
+    # At least 1 and max 2 teams can be specified
+    payload = {"team_ids": [1, 2, 3]}
+    ret = client.put(f'/experiments/{e.id}', json=payload)
+    assert ret.status_code == 400
+    assert ret.json == {'team_ids': ['Length must be between 1 and 2.']}
+
+    # experiment not found
+    payload = {"team_ids": [1, 2]}
+    ret = client.put(f'/experiments/{e.id + 1}', json=payload)
+    assert ret.status_code == 404
+    assert ret.json == 'Experiment not found!'
+
+    # trying to add a new team for a 1 team experiment
+    payload = {"team_ids": [1, 2]}
+    ret = client.put(f'/experiments/{e.id}', json=payload)
+    assert ret.status_code == 400
+    assert ret.json == 'Cannot change number of linked teams now'
+
+    # nothing to update(above condition is ignore when duplicate id)
+    # trying to add a new team for a 1 team experiment
+    payload = {"team_ids": [t1.id, t1.id]}
+    ret = client.put(f'/experiments/{e.id}', json=payload)
+    assert ret.status_code == 200
+    assert ret.json == 'Nothing to update'
+
+    # update with non-existing team
+    payload = {"team_ids": [t1.id + 2]}
+    ret = client.put(f'/experiments/{e.id}', json=payload)
+    assert ret.status_code == 400
+    assert ret.json == 'Some/All of the teams specified were not found'
+
+    # update
+    payload = {"team_ids": [t2.id]}
+    ret = client.put(f'/experiments/{e.id}', json=payload)
+    assert ret.status_code == 200
+    assert ret.json == {
+        'description': e.description,
+        'id': e.id,
+        'sample_ratio': e.sample_ratio,
+        'teams': [{'id': t2.id, 'name': t2.name}],
+    }

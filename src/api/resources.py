@@ -39,6 +39,14 @@ class ExperimentSchema(Schema):
     team_ids = maf.List(maf.Integer(), load_only=True, required=True, validate=mav.Length(1, 2))
 
 
+class ExperimentUpdateSchema(Schema):
+    # Ideally we would re-user the existing schema, but we're aiming
+    # for a simple setup therefore we're unable to re-user and exclude
+    # required fields that are irrelevant to this operation.
+
+    team_ids = maf.List(maf.Integer(), required=True, validate=mav.Length(1, 2))
+
+
 class BaseQueryArgsSchema(Schema):
     page = maf.Integer(load_default=0)
     limit = maf.Integer(load_default=25)
@@ -136,6 +144,42 @@ def create_experiment():
     db_session.commit()
 
     return ExperimentSchema().dump(experiment), 201
+
+
+@bp.route("/experiments/<int:experiment_id>", methods=["PUT"])
+def update_experiment(experiment_id: int):
+    """
+    Update an experiment.
+
+    can only update teams for now!
+    """
+
+    try:
+        item = ExperimentUpdateSchema().load(request.json)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
+    session = get_session()
+
+    experiment = session.get(Experiment, experiment_id)
+    if not experiment:
+        return jsonify("Experiment not found!"), 404
+    new_teams = {tid for tid in item["team_ids"]}
+    if len(new_teams) != len(experiment.teams):
+        return jsonify("Cannot change number of linked teams now"), 400
+
+    if not new_teams.difference({t.id for t in experiment.teams}):
+        return jsonify("Nothing to update"), 200
+
+    new_team_set = session.execute(select(Team).where(Team.id.in_(new_teams))).scalars().all()
+    if len(new_team_set) != len(new_teams):
+        return jsonify('Some/All of the teams specified were not found'), 400
+
+    experiment.teams = new_team_set
+    session.flush()
+    session.commit()
+
+    return ExperimentSchema().dump(experiment)
 
 
 @bp.route("/teams", methods=["POST"])

@@ -77,7 +77,7 @@ class Experiment(Base):
     sample_ratio: Mapped[int]
 
     teams: Mapped[list["Team"]] = relationship(
-        secondary=experiments_teams, uselist=True, lazy='selectin'
+        secondary=experiments_teams, uselist=True, lazy='selectin', back_populates="experiments"
     )
 
 
@@ -91,5 +91,5 @@ class Team(Base):
     name: Mapped[str]
 
     experiments: Mapped[list["Experiment"]] = relationship(
-        secondary=experiments_teams, uselist=True, lazy='selectin'
+        secondary=experiments_teams, uselist=True, lazy='selectin', back_populates="teams"
     )

@@ -1,0 +1,16 @@
+stages:
+  - test
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request"
+
+test:
+  stage: test
+  image: python:3.11
+  before_script:
+    - pip install -e .[test]
+  script:
+    - black --diff src tests
+    - isort --check-only src tests
+    - pytest

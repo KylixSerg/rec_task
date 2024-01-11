@@ -1,6 +1,6 @@
 import pytest
-from factories import ExperimentFactory
-from factories import TeamFactory
+from tests.factories import ExperimentFactory
+from tests.factories import TeamFactory
 from sqlalchemy import event
 
 from db import db_models

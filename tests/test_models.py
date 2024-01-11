@@ -1,4 +1,5 @@
-from factories import ExperimentFactory, TeamFactory
+from tests.factories import ExperimentFactory
+from tests.factories import TeamFactory
 
 
 def test_experiment_team_relationship():
@@ -13,5 +14,3 @@ def test_experiment_team_relationship():
     assert len(t1.experiments) == 1
     assert len(t2.experiments) == 2
     assert len(t3.experiments) == 1
-
-

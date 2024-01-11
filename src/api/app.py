@@ -1,7 +1,8 @@
 from flask import Flask
 from flask import jsonify
 
-from api.experiments import bp
+from api.resources import bp
+from config import DEBUG
 from db.db_models import setup_db
 
 
@@ -25,4 +26,4 @@ def create_app():
 
 def run():
     app = create_app()
-    app.run(host="0.0.0.0", port=8081)
+    app.run(host="0.0.0.0", port=8081, debug=DEBUG)

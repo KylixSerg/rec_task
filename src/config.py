@@ -16,3 +16,5 @@ DATABASE_USER = config('DATABASE_USER', default='rec_task')
 DATABASE_PASSWORD = config('DATABASE_PASSWORD', default='rec_task')
 DATABASE_DRIVER = 'postgresql+psycopg2'
 DATABASE_URL = f'{DATABASE_DRIVER}://{DATABASE_USER}:{quote(DATABASE_PASSWORD)}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}'  # noQA
+
+DEBUG = config("DEBUG", default=False, cast=bool)

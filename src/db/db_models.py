@@ -29,7 +29,6 @@ session: Session = None
 
 
 def get_session() -> Session:
-    global session
     return session
 
 

@@ -28,6 +28,11 @@ engine = None
 session: Session = None
 
 
+def get_session() -> Session:
+    global session
+    return session
+
+
 def _create_engine():
     global engine
     engine = create_engine(DATABASE_URL)

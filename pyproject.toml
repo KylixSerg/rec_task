@@ -44,3 +44,6 @@ env = """
     DATABASE_NAME=rec_task_test
     DATABASE_PORT=15436
 """
+
+[project.scripts]
+rec_task_api = "api.app:run"

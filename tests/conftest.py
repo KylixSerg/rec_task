@@ -1,9 +1,9 @@
 import pytest
-from tests.factories import ExperimentFactory
-from tests.factories import TeamFactory
 from sqlalchemy import event
 
 from db import db_models
+from tests.factories import ExperimentFactory
+from tests.factories import TeamFactory
 
 test_factories = [ExperimentFactory, TeamFactory]
 

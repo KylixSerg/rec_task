@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy import event
 
+from api.app import create_app
 from db import db_models
 from tests.factories import ExperimentFactory
 from tests.factories import TeamFactory
@@ -51,3 +52,18 @@ def session():
         session.flush()
         session.rollback()
         db_models.metadata.drop_all(bind=db_models.engine)
+
+
+@pytest.fixture(scope='session')
+def app():  # noqa
+    """Session-wide test `Flask` application."""
+
+    _app = create_app()
+
+    with _app.app_context():
+        yield _app
+
+
+@pytest.fixture()
+def client(app):
+    return app.test_client()

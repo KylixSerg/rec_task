@@ -44,6 +44,39 @@ def create_experiment():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
-    experiment = db.d.Experiment()
+    teams = (
+        db_session.execute(select(Team).where(Team.id.in_({team['id'] for team in item['teams']})))
+        .scalars()
+        .all()
+    )
 
-    return '', 201
+    if len(teams) != len({team['id'] for team in item['teams']}):
+        return 'Some/All of the teams specified were not found', 400
+
+    experiment = Experiment(
+        description=item['description'], sample_ratio=item['sample_ratio'], teams=teams
+    )
+
+    db_session.add(experiment)
+    db_session.commit()
+
+    return ExperimentSchema().dump(experiment), 201
+
+
+@bp.route("/teams", methods=["POST"])
+def create_team():
+
+    try:
+        item = TeamSchema().load(request.json)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
+    if db_session.execute(select(exists().where(Team.name == item['name']))).scalar():
+        return 'Team already exists', 400
+
+    team = Team(name=item['name'])
+
+    db_session.add(team)
+    db_session.commit()
+
+    return TeamSchema().dump(team), 201

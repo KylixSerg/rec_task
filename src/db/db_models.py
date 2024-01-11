@@ -6,6 +6,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import Table
 from sqlalchemy import create_engine
+from sqlalchemy import func
+from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import Session
@@ -93,3 +95,14 @@ class Team(Base):
     experiments: Mapped[list["Experiment"]] = relationship(
         secondary=experiments_teams, uselist=True, lazy='selectin', back_populates="teams"
     )
+
+
+# TODO: extract to a MAT VIEW
+experiment_teams_cte = (
+    select(
+        experiments_teams.c.experiment_id,
+        func.array_agg(experiments_teams.c.team_id).label("team_ids"),
+    )
+    .group_by(experiments_teams.c.experiment_id)
+    .cte()
+)

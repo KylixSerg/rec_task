@@ -12,14 +12,13 @@ from sqlalchemy import and_
 from sqlalchemy import asc
 from sqlalchemy import desc
 from sqlalchemy import exists
-from sqlalchemy import func
 from sqlalchemy import select
 from sqlalchemy import text
 from sqlalchemy.orm import selectinload
 
 from db.db_models import Experiment
 from db.db_models import Team
-from db.db_models import experiments_teams
+from db.db_models import experiment_teams_cte
 from db.db_models import get_session
 
 bp = Blueprint('rec_task_resources', __name__, url_prefix='')
@@ -99,21 +98,12 @@ def get_experiments():
     )
 
     if team_ids:
-        # TODO: extract to a MAT VIEW
-        filter_query = (
-            select(
-                experiments_teams.c.experiment_id,
-                func.array_agg(experiments_teams.c.team_id).label("team_ids"),
-            )
-            .group_by(experiments_teams.c.experiment_id)
-            .cte()
-        )
 
         query = query.join(
-            filter_query,
+            experiment_teams_cte,
             and_(
-                filter_query.c.team_ids.op("&&")(team_ids),
-                filter_query.c.experiment_id == Experiment.id,
+                experiment_teams_cte.c.team_ids.op("&&")(team_ids),
+                experiment_teams_cte.c.experiment_id == Experiment.id,
             ),
         )
 

@@ -167,6 +167,23 @@ def test_get_experiments(client):
         },
     ]
 
+    # t1, has no descendents - only e1
+    qs = {"team_ids[]": [t1.id]}
+
+    ret = client.get('/experiments', query_string=qs)
+    assert ret.status_code == 200
+    assert ret.json["data"] == [
+        # Linked to descendents of that team
+        {
+            'description': e1.description,
+            'id': e1.id,
+            'sample_ratio': e1.sample_ratio,
+            'teams': [
+                {'id': t1.id, 'name': t1.name},
+                {'id': t2.id, 'name': t2.name},
+            ],
+        }
+    ]
 
 
 def test_update_experiment(client):

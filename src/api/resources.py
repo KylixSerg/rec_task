@@ -102,7 +102,9 @@ def get_experiments():
         query = query.join(
             experiment_teams_cte,
             and_(
-                experiment_teams_cte.c.team_ids.op("&&")(team_ids),
+                experiment_teams_cte.c.team_ids.op("&&")(
+                    team_ids + Team.get_all_sub_teams(tuple(team_ids))
+                ),
                 experiment_teams_cte.c.experiment_id == Experiment.id,
             ),
         )

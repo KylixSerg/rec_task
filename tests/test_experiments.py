@@ -122,6 +122,52 @@ def test_get_experiments(client):
         },
     ]
 
+    # filter by teams (that have sub-teams)
+    parent_team = TeamFactory()
+    # make it parent for t1, t2, t3
+    t1.parent_team_id = parent_team.id
+    t2.parent_team_id = parent_team.id
+    t3.parent_team_id = parent_team.id
+    # create an experiment linked to the parent
+    pe = ExperimentFactory(teams=[parent_team])
+
+    # Fetching experiment for parent team should give us back experiment of t1, t2, t3
+    qs = {"team_ids[]": [parent_team.id]}
+
+    ret = client.get('/experiments', query_string=qs)
+    assert ret.status_code == 200
+    assert ret.json["data"] == [
+        # Linked to descendents of that team
+        {
+            'description': e1.description,
+            'id': e1.id,
+            'sample_ratio': e1.sample_ratio,
+            'teams': [
+                {'id': t1.id, 'name': t1.name},
+                {'id': t2.id, 'name': t2.name},
+            ],
+        },
+        {
+            'description': e2.description,
+            'id': e2.id,
+            'sample_ratio': e2.sample_ratio,
+            'teams': [
+                {'id': t2.id, 'name': t2.name},
+                {'id': t3.id, 'name': t3.name},
+            ],
+        },
+        # Directly linked to the team
+        {
+            'description': pe.description,
+            'id': pe.id,
+            'sample_ratio': pe.sample_ratio,
+            'teams': [
+                {'id': parent_team.id, 'name': parent_team.name},
+            ],
+        },
+    ]
+
+
 
 def test_update_experiment(client):
     """Test update experiment teams."""

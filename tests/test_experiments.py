@@ -233,3 +233,17 @@ def test_update_experiment(client):
         'sample_ratio': e.sample_ratio,
         'teams': [{'id': t2.id, 'name': t2.name}],
     }
+
+    # create another experiment with 2 teams
+    t2_child, t_ = TeamFactory.create_batch(2)
+    t2_child.parent_team_id = t2.id
+    e = ExperimentFactory(teams=[t2_child, t_])
+
+    # Cant have both t2 and t2_child assigned to one experiment
+    payload = {"team_ids": [t2.id, t2_child.id]}
+    ret = client.put(f'/experiments/{e.id}', json=payload)
+    assert ret.status_code == 400
+    assert ret.json == 'Experiment teams cannot be descendents of one another'
+
+
+

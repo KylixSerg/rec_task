@@ -168,6 +168,13 @@ def update_experiment(experiment_id: int):
     if len(new_team_set) != len(new_teams):
         return jsonify('Some/All of the teams specified were not found'), 400
 
+    if len(new_teams) > 1:
+        # make sure new teams are not descendents of one another
+        all_descendents = Team.get_all_sub_teams(tuple(new_teams))
+        if any(nt in all_descendents for nt in new_teams):
+            # One of our new teams is showing up in the children of the other
+            return jsonify('Experiment teams cannot be descendents of one another'), 400
+
     experiment.teams = new_team_set
     session.flush()
     session.commit()

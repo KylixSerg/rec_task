@@ -11,7 +11,7 @@ config.loaders = [
 
 DATABASE_NAME = config('DATABASE_NAME', default='rec_task')
 DATABASE_HOST = config('DATABASE_HOST', default='127.0.0.1')
-DATABASE_PORT = config('DATABASE_PORT', default='15436')
+DATABASE_PORT = config('DATABASE_PORT', default='5432')
 DATABASE_USER = config('DATABASE_USER', default='rec_task')
 DATABASE_PASSWORD = config('DATABASE_PASSWORD', default='rec_task')
 DATABASE_DRIVER = 'postgresql+psycopg2'
